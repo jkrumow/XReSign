@@ -8,7 +8,7 @@
 #
 
 usage="Usage example:
-$(basename "$0") -s path -c certificate [-e entitlements] [-p path] [-b identifier]
+$(basename "$0") -s path -c certificate [-e entitlements] [-p path] [-b identifier] [-o version string] [-v build number]
 
 where:
 -s  path to ipa file which you want to sign/resign

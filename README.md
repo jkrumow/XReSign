@@ -11,7 +11,7 @@ In addition to GUI app, you can find, inside Scripts folder, xresign.sh script t
 
 ### Usage:
 ```
-$ ./xresign.sh -s path -c certificate [-e entitlements] [-p path] [-b identifier]
+$ ./xresign.sh -s path -c certificate [-e entitlements] [-p path] [-b identifier] [-o version string] [-v build number]
 
 where:
 -s  path to ipa file which you want to sign/resign
