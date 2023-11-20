@@ -51,8 +51,9 @@ class ViewController: NSViewController {
         2. Drag or browse provisioning profile to the second box. (Optional)
         3. Drag or browse entitlements plist to the third box. (Optional)
         4. In the next box your can change the app bundle identifier. (Optional)
-        5. Select signing certificate from Keychain Access in the bottom box.
-        6. Click ReSign! The resigned file will be saved in the same folder as the original file.
+        5. In the boxes below that you can change the app bundle version and build number (Optional)
+        6. Select signing certificate from Keychain Access in the bottom box.
+        7. Click ReSign! The resigned file will be saved in the same folder as the original file.
 
         NOTE: Pay attention to the right pair between signing certificate and provisioning profile.
         """)
