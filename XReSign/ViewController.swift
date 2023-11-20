@@ -16,13 +16,17 @@ class ViewController: NSViewController {
     @IBOutlet var textFieldEntitlementsPath: NSTextField!
 
     @IBOutlet var textFieldBundleId: NSTextField!
+    @IBOutlet var textFieldBundleShortVersionString: NSTextField!
+    @IBOutlet var textFieldBundleBuild: NSTextField!
+
     @IBOutlet var comboBoxKeychains: NSComboBox!
     @IBOutlet var comboBoxCertificates: NSComboBox!
     @IBOutlet var buttonChangeBundleId: NSButton!
+    @IBOutlet var buttonChangeBundleVersion: NSButton!
     @IBOutlet var buttonResign: NSButton!
     @IBOutlet var progressIndicator: NSProgressIndicator!
     @IBOutlet var textViewLog: NSTextView!
-    
+
     fileprivate var certificates: [String] = []
     fileprivate var keychains: [String: String] = [:]
     fileprivate var tempDir: String?
@@ -39,20 +43,20 @@ class ViewController: NSViewController {
         if let defaultEntitlements = UserDefaults.standard.string(forKey: kEntitlementsPathKey) {
             textFieldEntitlementsPath.stringValue = defaultEntitlements
         }
-        
+
         apppendLog(message: """
-            XReSign allows you to (re)sign unencrypted ipa-file with certificate for which you hold the corresponding private key.
+        XReSign allows you to (re)sign unencrypted ipa-file with certificate for which you hold the corresponding private key.
 
-            1. Drag or browse .ipa file to the top box.
-            2. Drag or browse provisioning profile to the second box. (Optional)
-            3. Drag or browse entitlements plist to the third box. (Optional)
-            4. In the next box your can change the app bundle identifier. (Optional)
-            5. Select signing certificate from Keychain Access in the bottom box.
-            6. Click ReSign! The resigned file will be saved in the same folder as the original file.
+        1. Drag or browse .ipa file to the top box.
+        2. Drag or browse provisioning profile to the second box. (Optional)
+        3. Drag or browse entitlements plist to the third box. (Optional)
+        4. In the next box your can change the app bundle identifier. (Optional)
+        5. Select signing certificate from Keychain Access in the bottom box.
+        6. Click ReSign! The resigned file will be saved in the same folder as the original file.
 
-            NOTE: Pay attention to the right pair between signing certificate and provisioning profile.
-            """)
-        
+        NOTE: Pay attention to the right pair between signing certificate and provisioning profile.
+        """)
+
         loadKeychains()
     }
 
@@ -61,18 +65,18 @@ class ViewController: NSViewController {
             // Update the view, if already loaded.
         }
     }
-    
+
     private func clearLog() {
         DispatchQueue.main.async {
             self.textViewLog.string = ""
         }
     }
-    
+
     private func apppendLog(message: String) {
         if message.count == 0 {
             return
         }
-        
+
         DispatchQueue.main.async {
             var text: String
             if self.textViewLog.string.isEmpty {
@@ -247,12 +251,12 @@ class ViewController: NSViewController {
         return nil
     }
 
-    private func signIpaWith(path ipaPath: String, developer: String, provisioning: String, bundle: String?, entitlementsPath: String?) {
+    private func signIpaWith(path ipaPath: String, developer: String, provisioning: String, bundle: String?, bundleShort: String?, bundleVersion: String?, entitlementsPath: String?) {
         guard let launchPath = Bundle.main.path(forResource: "xresign", ofType: "sh") else {
             showAlertWith(title: nil, message: "Can not find resign script to run", style: .critical)
             return
         }
-        
+
         clearLog()
 
         buttonResign.isEnabled = false
@@ -263,15 +267,15 @@ class ViewController: NSViewController {
         let pipe: Pipe = Pipe()
 
         task.launchPath = "/bin/sh"
-        task.arguments = [launchPath, "-s", ipaPath, "-c", developer, "-p", provisioning, "-b", bundle ?? "", "-e", entitlementsPath ?? ""]
+        task.arguments = [launchPath, "-s", ipaPath, "-c", developer, "-p", provisioning, "-b", bundle ?? "", "-e", entitlementsPath ?? "", "-o", bundleShort ?? "", "-v", bundleVersion ?? ""]
         task.standardOutput = pipe
         task.standardError = pipe
 
         let handle = pipe.fileHandleForReading
         handle.waitForDataInBackgroundAndNotify()
-    
+
         progressObserver = NotificationCenter.default.addObserver(forName: NSNotification.Name.NSFileHandleDataAvailable,
-                                                                  object: handle, queue: nil) {  notification -> Void in
+                                                                  object: handle, queue: nil) { _ in
             let data = handle.availableData
             if data.count > 0 {
                 if let message = NSString(data: data, encoding: String.Encoding.utf8.rawValue) {
@@ -284,7 +288,7 @@ class ViewController: NSViewController {
         }
 
         terminateObserver = NotificationCenter.default.addObserver(forName: Process.didTerminateNotification,
-                                                                   object: task, queue: nil) { notification -> Void in
+                                                                   object: task, queue: nil) { _ in
             NotificationCenter.default.removeObserver(self.terminateObserver!)
             DispatchQueue.main.async {
                 self.buttonResign.isEnabled = true
@@ -305,7 +309,7 @@ class ViewController: NSViewController {
         openPanel.canCreateDirectories = false
         openPanel.canChooseFiles = true
         openPanel.allowedFileTypes = ["ipa", "IPA"]
-        openPanel.begin { (result) -> Void in
+        openPanel.begin { result in
             if result == .OK {
                 self.textFieldIpaPath.stringValue = openPanel.url?.path ?? ""
             }
@@ -319,7 +323,7 @@ class ViewController: NSViewController {
         openPanel.canCreateDirectories = false
         openPanel.canChooseFiles = true
         openPanel.allowedFileTypes = ["plist"]
-        openPanel.begin { (result) -> Void in
+        openPanel.begin { result in
             if result == .OK {
                 self.textFieldEntitlementsPath.stringValue = openPanel.url?.path ?? ""
             }
@@ -333,7 +337,7 @@ class ViewController: NSViewController {
         openPanel.canCreateDirectories = false
         openPanel.canChooseFiles = true
         openPanel.allowedFileTypes = ["mobileprovision"]
-        openPanel.begin { (result) -> Void in
+        openPanel.begin { result in
             if result == .OK {
                 self.textFieldProvisioningPath.stringValue = openPanel.url?.path ?? ""
             }
@@ -344,12 +348,20 @@ class ViewController: NSViewController {
         textFieldBundleId.isEnabled = buttonChangeBundleId.state == .on
     }
 
+    @IBAction func actionChangeBundleVersion(_ sender: Any) {
+        textFieldBundleShortVersionString.isEnabled = buttonChangeBundleVersion.state == .on
+        textFieldBundleBuild.isEnabled = buttonChangeBundleVersion.state == .on
+    }
+
     @IBAction func actionSign(_ sender: Any) {
         let ipaPath = textFieldIpaPath.stringValue
         let provisioningPath = textFieldProvisioningPath.stringValue
         let entitlementsPath = textFieldEntitlementsPath.stringValue
 
         let bundleId: String? = buttonChangeBundleId.state == .on ? textFieldBundleId.stringValue : nil
+        let bundleShortVersionString: String? = buttonChangeBundleVersion.state == .on ? textFieldBundleShortVersionString.stringValue : nil
+        let bundleVersion: String? = buttonChangeBundleVersion.state == .on ? textFieldBundleShortVersionString.stringValue + "." + textFieldBundleBuild.stringValue : nil
+
         let index = comboBoxCertificates.indexOfSelectedItem
         let certificateName: String? = index >= 0 ? certificates[index] : nil
 
@@ -413,7 +425,7 @@ class ViewController: NSViewController {
         }
 
         UserDefaults.standard.setValue(provisioningPath, forKey: kLastProvisioningPathKey)
-        signIpaWith(path: ipaPath, developer: commonName, provisioning: provisioningPath, bundle: bundleId, entitlementsPath: entitlementsPath)
+        signIpaWith(path: ipaPath, developer: commonName, provisioning: provisioningPath, bundle: bundleId, bundleShort: bundleShortVersionString, bundleVersion: bundleVersion, entitlementsPath: entitlementsPath)
     }
 
     // MARK: - Alert

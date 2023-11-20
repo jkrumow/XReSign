@@ -15,10 +15,12 @@ where:
 -c  signing certificate Common Name from Keychain
 -e  new entitlements to change (Optional)
 -p  path to mobile provisioning file (Optional)
--b  bundle identifier (Optional)"
+-b  bundle identifier (Optional)
+-o  bundle short version string (Optional)
+-v  bundle version (Optional)"
 
 
-while getopts s:c:e:p:b: option
+while getopts s:c:e:p:b:o:v: option
 do
     case "${option}"
     in
@@ -31,6 +33,10 @@ do
       p) MOBILEPROV=${OPTARG}
          ;;
       b) BUNDLEID=${OPTARG}
+         ;;
+      o) BUNDLEVERSIONSTR=${OPTARG}
+         ;;
+      v) BUNDLEVERSION=${OPTARG}
          ;;
      \?) echo "invalid option: -$OPTARG" >&2
          echo "$usage" >&2
@@ -81,6 +87,20 @@ else
     /usr/libexec/PlistBuddy -c "Set:CFBundleIdentifier $BUNDLEID" "$APP_PATH/Info.plist"
 fi
 
+if [[ -z "${BUNDLEVERSIONSTR}" ]]; then
+    echo "Sign using existing bundle short version string from payload"
+else
+    echo "Changing bundle short version string with: $BUNDLEVERSIONSTR"
+    /usr/libexec/PlistBuddy -c "Set:CFBundleShortVersionString $BUNDLEVERSIONSTR" "$APP_PATH/Info.plist"
+fi
+
+if [[ -z "${BUNDLEVERSION}" ]]; then
+    echo "Sign using existing bundle version from payload"
+else
+    echo "Changing bundle version with: $BUNDLEVERSION"
+    /usr/libexec/PlistBuddy -c "Set:CFBundleShortVersionString $BUNDLEVERSION" "$APP_PATH/Info.plist"
+fi
+
 
 echo "Get list of components and sign with certificate: $DEVELOPER"
 find -d "$APP_PATH" \( -name "*.app" -o -name "*.appex" -o -name "*.framework" -o -name "*.dylib" \) > "$TMPDIR/components.txt"
@@ -92,6 +112,16 @@ while IFS='' read -r line || [[ -n "$line" ]]; do
         if [[ ! -z "${BUNDLEID}" ]]; then
             echo "Changing .appex bundle identifier with: $BUNDLEID.extra$var"
             /usr/libexec/PlistBuddy -c "Set:CFBundleIdentifier $BUNDLEID.extra$var" "$line/Info.plist"
+            var=$((var+1))
+        fi
+        if [[ ! -z "${BUNDLEVERSIONSTR}" ]]; then
+            echo "Changing .appex bundle short version string with: $BUNDLEVERSIONSTR.extra$var"
+            /usr/libexec/PlistBuddy -c "Set:CFBundleShortVersionString $BUNDLEVERSIONSTR.extra$var" "$line/Info.plist"
+            var=$((var+1))
+        fi
+        if [[ ! -z "${BUNDLEVERSION}" ]]; then
+            echo "Changing .appex bundle version with: $BUNDLEVERSION.extra$var"
+            /usr/libexec/PlistBuddy -c "Set:CFBundleVersion $BUNDLEVERSION.extra$var" "$line/Info.plist"
             var=$((var+1))
         fi
         /usr/bin/codesign --continue -f -s "$DEVELOPER" --entitlements "$TMPDIR/entitlements.plist" "$line"
