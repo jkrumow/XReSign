@@ -4,7 +4,7 @@ XReSign allows you to sign or resign unencrypted ipa-files with certificate for 
 ## How to use
 
 ### GUI application
-![Screenshot](https://github.com/sterben-Dev10/XreSign/blob/master/screenshot/screenshot.png)
+![Screenshot](https://github.com/jkrumow/XreSign/blob/master/screenshot/screenshot.png)
 
 ### Shell command
 In addition to GUI app, you can find, inside Scripts folder, xresign.sh script to run resign task from the command line.
