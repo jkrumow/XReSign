@@ -8,23 +8,23 @@
 #
 
 usage="Usage example:
-$(basename "$0") -s path -c certificate [-e entitlements] [-p path] [-b identifier] [-o version string] [-v build number]
+$(basename "$0") -f path -c certificate [-e entitlements] [-p path] [-b identifier] [-s version string] [-n build number]
 
 where:
--s  path to ipa file which you want to sign/resign
+-f  path to ipa file which you want to sign/resign
 -c  signing certificate Common Name from Keychain
 -e  new entitlements to change (Optional)
 -p  path to mobile provisioning file (Optional)
 -b  bundle identifier (Optional)
--o  bundle short version string (Optional)
--v  bundle version (Optional)"
+-s  bundle short version string (Optional)
+-n  build number (Optional)"
 
 
-while getopts s:c:e:p:b:o:v: option
+while getopts f:c:e:p:b:s:n: option
 do
     case "${option}"
     in
-      s) SOURCEIPA=${OPTARG}
+      f) SOURCEIPA=${OPTARG}
          ;;
       c) DEVELOPER=${OPTARG}
          ;;
@@ -34,9 +34,9 @@ do
          ;;
       b) BUNDLEID=${OPTARG}
          ;;
-      o) BUNDLEVERSIONSTR=${OPTARG}
+      s) BUNDLEVERSIONSTR=${OPTARG}
          ;;
-      v) BUNDLEVERSION=${OPTARG}
+      n) BUNDLEVERSION=${OPTARG}
          ;;
      \?) echo "invalid option: -$OPTARG" >&2
          echo "$usage" >&2

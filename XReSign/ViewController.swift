@@ -267,7 +267,7 @@ class ViewController: NSViewController {
         let pipe: Pipe = Pipe()
 
         task.launchPath = "/bin/sh"
-        task.arguments = [launchPath, "-s", ipaPath, "-c", developer, "-p", provisioning, "-b", bundle ?? "", "-e", entitlementsPath ?? "", "-o", bundleShort ?? "", "-v", bundleVersion ?? ""]
+        task.arguments = [launchPath, "-f", ipaPath, "-c", developer, "-p", provisioning, "-b", bundle ?? "", "-e", entitlementsPath ?? "", "-s", bundleShort ?? "", "-n", bundleVersion ?? ""]
         task.standardOutput = pipe
         task.standardError = pipe
 

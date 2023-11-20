@@ -11,16 +11,16 @@ In addition to GUI app, you can find, inside Scripts folder, xresign.sh script t
 
 ### Usage:
 ```
-$ ./xresign.sh -s path -c certificate [-e entitlements] [-p path] [-b identifier] [-o version string] [-v build number]
+$ ./xresign.sh -f path -c certificate [-e entitlements] [-p path] [-b identifier] [-s version string] [-n build number]
 
 where:
--s  path to ipa file which you want to sign/resign
+-f  path to ipa file which you want to sign/resign
 -c  signing certificate Common Name from Keychain
 -e  new entitlements to change (Optional)
 -p  path to mobile provisioning file (Optional)
 -b  bundle identifier (Optional)
--o  bundle short version string (Optional)
--v  bundle version (Optional)
+-s  bundle short version string (Optional)
+-n  build number (Optional)
 ```
 
 ## Acknowledgments
