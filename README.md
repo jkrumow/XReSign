@@ -19,6 +19,9 @@ where:
 -e  new entitlements to change (Optional)
 -p  path to mobile provisioning file (Optional)
 -b  bundle identifier (Optional)
+-o  bundle short version string (Optional)
+-v  bundle version (Optional)
 ```
+
 ## Acknowledgments
 Inspired by such great tool as iReSign and other command line scripts to resign the ipa files. Unfortunately a lot of them not supported today. So this is an attempt to support resign the app bundle components both through the GUI application and through the command line script.
