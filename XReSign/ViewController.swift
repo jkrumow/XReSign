@@ -372,7 +372,7 @@ class ViewController: NSViewController {
         if !entitlementsPath.isEmpty {
             if !FileManager.default.fileExists(atPath: entitlementsPath) {
                 showAlertWith(title: nil,
-                              message: "Entitlements not exists!",
+                              message: "Entitlements not found!",
                               style: .critical)
                 return
             }
@@ -389,7 +389,7 @@ class ViewController: NSViewController {
             }
             if !FileManager.default.fileExists(atPath: provisioningPath) {
                 showAlertWith(title: nil,
-                              message: "Provisioning not exists!",
+                              message: "Provisioning not found!",
                               style: .critical)
                 return
             }
