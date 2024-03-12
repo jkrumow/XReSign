@@ -98,7 +98,7 @@ if [[ -z "${BUNDLEVERSION}" ]]; then
     echo "Sign using existing bundle version from payload"
 else
     echo "Changing bundle version with: $BUNDLEVERSION"
-    /usr/libexec/PlistBuddy -c "Set:CFBundleShortVersionString $BUNDLEVERSION" "$APP_PATH/Info.plist"
+    /usr/libexec/PlistBuddy -c "Set:CFBundleVersion $BUNDLEVERSION" "$APP_PATH/Info.plist"
 fi
 
 

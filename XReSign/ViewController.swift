@@ -361,7 +361,7 @@ class ViewController: NSViewController {
 
         let bundleId: String? = buttonChangeBundleId.state == .on ? textFieldBundleId.stringValue : nil
         let bundleShortVersionString: String? = buttonChangeBundleVersion.state == .on ? textFieldBundleShortVersionString.stringValue : nil
-        let bundleVersion: String? = buttonChangeBundleVersion.state == .on ? textFieldBundleShortVersionString.stringValue + "." + textFieldBundleBuild.stringValue : nil
+        let bundleVersion: String? = buttonChangeBundleVersion.state == .on ? textFieldBundleBuild.stringValue : nil
 
         let index = comboBoxCertificates.indexOfSelectedItem
         let certificateName: String? = index >= 0 ? certificates[index] : nil
